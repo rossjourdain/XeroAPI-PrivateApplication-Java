@@ -31,7 +31,6 @@ https://github.com/XeroAPI/XeroAPI-Schemas
 Step 3:  Download this project
 
 Step 4:  Add the schemas to src/main/resources/XeroSchemas/v2.00/
-(Delete the Xero.API.Schemas.csproj file as it will create havoc with the JAXB engine)
 
 Step 5:  Build and Hack
 
