@@ -16,14 +16,16 @@
 Xero API private application access to Xero using Java
 ===
 
-This is a simple project to show you how to use Java to access your Xero data via the Xero API.  This project uses the 2-legged OAuth approach (OAuth 1.1a), refered to by the Xero API as Private Applications.
+This is a simple project to show you how to use Java to access your Xero data via the Xero API. 
+This project uses the 2-legged OAuth approach (OAuth 1.1a),
+referred to by the Xero API as Private Applications.
 
-Step 1:  Setup a Xero application 
+Step 1:  Setup a Xero application
 Follow the instructions here:
 http://blog.xero.com/developer/api-overview/setup-an-application/#private-apps
 
 Step 2:  Get the Schemas
-Get the latest Xero API schemas here: 
+Get the latest Xero API schemas here:
 https://github.com/XeroAPI/XeroAPI-Schemas
 
 Step 3:  Download this project
@@ -42,4 +44,5 @@ http://confluence.highsource.org/display/MJIIP/User+Guide
 
 -- Java OAuth - OAuth implementation --
 http://code.google.com/p/oauth/
+
 
