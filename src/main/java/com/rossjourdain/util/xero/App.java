@@ -55,27 +55,61 @@ public class App {
         public static void main(String[] args) {
 
         // Retrieve a list of Invoices
-        ArrayOfInvoice arrayOfInvoice = getInvoices();
-        for (Invoice invoice : arrayOfInvoice.getInvoice()) {
+        ArrayOfInvoice arrayOfExistingInvoices = getInvoices();
+        for (Invoice invoice : arrayOfExistingInvoices.getInvoice()) {
             System.out.println("Invoice: " + invoice.getInvoiceID());
         }
 
+        // Create an Invoice
+        ArrayOfInvoice arrayOfInvoice = new ArrayOfInvoice();
+        List<Invoice> invoices = arrayOfInvoice.getInvoice();
+        Invoice invoice = new Invoice();
+        
+        Contact contact = new Contact();
+        contact.setName("Jane Smith");
+        contact.setEmailAddress("jane@smith.com");
+        invoice.setContact(contact);
+        
+        ArrayOfLineItem arrayOfLineItem = new ArrayOfLineItem();
+        List<LineItem> lineItems = arrayOfLineItem.getLineItem();
+        LineItem lineItem = new LineItem();
+        lineItem.setAccountCode("200");
+        BigDecimal qty = new BigDecimal("2");
+        lineItem.setQuantity(qty);
+        BigDecimal amnt = new BigDecimal("50.00");
+        lineItem.setUnitAmount(amnt);
+        lineItem.setDescription("Programming books");
+        lineItem.setLineAmount(qty.multiply(amnt));
+        lineItems.add(lineItem);
+        invoice.setLineItems(arrayOfLineItem);
+        
+        invoice.setDate(Calendar.getInstance());
+        Calendar due = Calendar.getInstance();
+        due.set(due.get(Calendar.YEAR), due.get(Calendar.MONTH) + 1, 20);
+        invoice.getLineAmountTypes().add("Inclusive");
+        invoice.setDueDate(due);
+        invoice.setInvoiceNumber("INV-API-001");
+        invoice.setType(InvoiceType.ACCREC);
+        invoices.add(invoice);
+        
+        postInvoices(arrayOfInvoice);
+        
         
         // Create a new Contact
         ArrayOfContact arrayOfContact = new ArrayOfContact();
         List<Contact> contacts = arrayOfContact.getContact();
         
         
-        Contact contact = new Contact();
-        contact.setName("John Smith");
-        contact.setEmailAddress("john@smith.com");
-        contacts.add(contact);
+        Contact contact1 = new Contact();
+        contact1.setName("John Smith");
+        contact1.setEmailAddress("john@smith.com");
+        contacts.add(contact1);
         postContacts(arrayOfContact);
 
 
         // Add a payment to an exisiting Invoice
-        Invoice invoice = new Invoice();
-        invoice.setInvoiceNumber("INV-0038");
+        Invoice invoice1 = new Invoice();
+        invoice1.setInvoiceNumber("INV-0038");
 
         Account account = new Account();
         account.setCode("090");
