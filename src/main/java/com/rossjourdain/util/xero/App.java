@@ -18,20 +18,14 @@
 
 package com.rossjourdain.util.xero;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.List;
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
-import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 import net.oauth.client.OAuthClient;
-import net.oauth.client.OAuthResponseMessage;
 import net.oauth.client.httpclient3.HttpClient3;
 import net.oauth.signature.RSA_SHA1;
 
