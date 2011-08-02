@@ -19,19 +19,20 @@
 -->
 <!--
 /*
- *  Change the status attribute on the BaseTypes to 'dataContractStatus' as 
- *  it clashes with the document status element of Invoices etc
+ *  Replace all XMLGregorian Dates with Calendars for ease of use
+ *  
+ *  Solution found here:  
+ *  http://jaxb.java.net/guide/Using_different_datatypes.html
  *
  */
 -->
 <jxb:bindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+               xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
                jxb:version="2.0">
-    <jxb:bindings schemaLocation="BaseTypes.xsd" node="/xsd:schema">
-        <jxb:bindings node="//xsd:complexType[@name='DataContractBase']">
-            <jxb:bindings node="//xsd:attribute[@name='status']">
-                <jxb:property name="dataContractStatus"/>
-            </jxb:bindings>
-        </jxb:bindings>
+    <jxb:bindings xmlns="http://java.sun.com/xml/ns/jaxb" version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <jxb:globalBindings>
+            <jxb:javaType name="java.util.Calendar" xmlType="xs:dateTime" parseMethod="javax.xml.bind.DatatypeConverter.parseDate" printMethod="javax.xml.bind.DatatypeConverter.printDate" />
+        </jxb:globalBindings>
     </jxb:bindings>
 </jxb:bindings>

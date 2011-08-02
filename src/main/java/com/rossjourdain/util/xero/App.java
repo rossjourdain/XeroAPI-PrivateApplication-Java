@@ -37,14 +37,12 @@ import net.oauth.signature.RSA_SHA1;
 
 public class App {
 
-    public static void main(String[] args) {
+        private static final String endpointUrl = "https://api.xero.com/api.xro/2.0/";
 
-        String endpointUrl = "https://api.xero.com/api.xro/2.0/";
+        private static final String consumerKey = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+        private static final String consumerSecret = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
-        String consumerKey = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-        String consumerSecret = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-
-        String privateKey = "-----BEGIN RSA PRIVATE KEY-----\n"
+        private static final String privateKey = "-----BEGIN RSA PRIVATE KEY-----\n"
                 + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n"
                 + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n"
                 + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n"
@@ -60,6 +58,51 @@ public class App {
                 + "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n"
                 + "-----END RSA PRIVATE KEY-----";
 
+        public static void main(String[] args) {
+
+        // Retrieve a list of Invoices
+        ArrayOfInvoice arrayOfInvoice = getInvoices();
+        for (Invoice invoice : arrayOfInvoice.getInvoice()) {
+            System.out.println("Invoice: " + invoice.getInvoiceID());
+        }
+
+        
+        // Create a new Contact
+        ArrayOfContact arrayOfContact = new ArrayOfContact();
+        List<Contact> contacts = arrayOfContact.getContact();
+        
+        
+        Contact contact = new Contact();
+        contact.setName("John Smith");
+        contact.setEmailAddress("john@smith.com");
+        contacts.add(contact);
+        postContacts(arrayOfContact);
+
+
+        // Add a payment to an exisiting Invoice
+        Invoice invoice = new Invoice();
+        invoice.setInvoiceNumber("INV-0038");
+
+        Account account = new Account();
+        account.setCode("090");
+
+        Payment payment = new Payment();
+        payment.setAccount(account);
+        payment.setInvoice(invoice);
+        payment.setAmount(new BigDecimal("20.00"));
+        payment.setDate(Calendar.getInstance());
+
+        ArrayOfPayment arrayOfPayment = new ArrayOfPayment();
+        List<Payment> payments = arrayOfPayment.getPayment();
+        payments.add(payment);
+
+        postPayments(arrayOfPayment);
+        
+        
+    }
+
+    private static OAuthAccessor buildAccessor() {
+
         OAuthConsumer consumer = new OAuthConsumer(null, consumerKey, null, null);
         consumer.setProperty(RSA_SHA1.PRIVATE_KEY, privateKey);
         consumer.setProperty(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.RSA_SHA1);
@@ -68,28 +111,57 @@ public class App {
         accessor.accessToken = consumerKey;
         accessor.tokenSecret = consumerSecret;
 
+        return accessor;
+    }
+
+    private static ArrayOfInvoice getInvoices() {
+        ArrayOfInvoice arrayOfInvoices = null;
         try {
-
             OAuthClient client = new OAuthClient(new HttpClient3());
+            OAuthAccessor accessor = buildAccessor();
             OAuthMessage message = client.invoke(accessor, OAuthMessage.GET, endpointUrl + "Invoices", null);
-
-            JAXBContext context = JAXBContext.newInstance(ResponseType.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            JAXBElement<ResponseType> element = unmarshaller.unmarshal(new StreamSource(message.getBodyAsStream()), ResponseType.class);
-            ResponseType response = element.getValue();
-
-            printResponse(response);
-
-        } catch (JAXBException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (OAuthException ex) {
-            ex.printStackTrace();
-        } catch (URISyntaxException ex) {
+            arrayOfInvoices = XeroXmlManager.xmlToInvoices(message.getBodyAsStream());
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
+        return arrayOfInvoices;
+    }
 
+    private static boolean postContacts(ArrayOfContact arrayOfContact) {
+        boolean success = false;
+        try {
+            OAuthClient client = new OAuthClient(new HttpClient3());
+            OAuthAccessor accessor = buildAccessor();
+            String contactsString = XeroXmlManager.contactsToXml(arrayOfContact);
+            client.invoke(accessor, OAuthMessage.POST, endpointUrl + "Contacts", OAuth.newList("xml", contactsString));
+            success = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return success;
+    }
+
+    private static void postInvoices(ArrayOfInvoice arrayOfInvoices) {
+        try {
+            OAuthClient client = new OAuthClient(new HttpClient3());
+            OAuthAccessor accessor = buildAccessor();
+            String contactsString = XeroXmlManager.invoicesToXml(arrayOfInvoices);
+            client.invoke(accessor, OAuthMessage.POST, endpointUrl + "Invoices", OAuth.newList("xml", contactsString));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private static void postPayments(ArrayOfPayment arrayOfPayment) {
+        OAuthMessage oAuthMessage = null;
+        try {
+            OAuthClient client = new OAuthClient(new HttpClient3());
+            OAuthAccessor accessor = buildAccessor();
+            String paymentsString = XeroXmlManager.paymentsToXml(arrayOfPayment);
+            oAuthMessage = client.invoke(accessor, OAuthMessage.POST, endpointUrl + "Payments", OAuth.newList("xml", paymentsString));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private static void printResponse(ResponseType response) {
