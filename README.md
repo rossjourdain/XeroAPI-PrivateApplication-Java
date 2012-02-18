@@ -21,11 +21,16 @@ This project uses the 2-legged OAuth approach (OAuth 1.1a),
 referred to by the Xero API as Private Applications.
 
 Step 1:  Setup a Xero application
+
 Follow the instructions here:
 http://blog.xero.com/developer/api-overview/setup-an-application/#private-apps
 
 Step 2:  Get the Schemas
-Get the latest Xero API schemas here:
+
+Start with the modified Xero API schemas here:
+https://github.com/rossjourdain/XeroAPI-Schemas
+
+They should be up to date but if not, you can get the latest Xero API schemas here:
 https://github.com/XeroAPI/XeroAPI-Schemas
 
 Step 3:  Download this project
