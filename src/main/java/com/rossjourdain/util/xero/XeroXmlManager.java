@@ -1,13 +1,16 @@
 package com.rossjourdain.util.xero;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+import net.oauth.OAuthProblemException;
 
 /**
  *
@@ -31,6 +34,55 @@ public class XeroXmlManager {
         }
 
         return arrayOfInvoices;
+    }
+
+    public static ResponseType xmlToResponse(InputStream responseStream) {
+
+        ResponseType response = null;
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(ResponseType.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            JAXBElement<ResponseType> element = unmarshaller.unmarshal(new StreamSource(responseStream), ResponseType.class);
+            response = element.getValue();
+
+        } catch (JAXBException ex) {
+            ex.printStackTrace();
+        }
+
+        return response;
+    }
+    
+    public static ApiException xmlToException(String exceptionString) {
+
+        ApiException apiException = null;
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(ApiException.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            JAXBElement<ApiException> element = unmarshaller.unmarshal(new StreamSource(new StringReader(exceptionString)), ApiException.class);
+            apiException = element.getValue();
+
+        } catch (JAXBException ex) {
+            ex.printStackTrace();
+        }
+
+        return apiException;
+    }
+
+    public static String oAuthProblemExceptionToXml(OAuthProblemException authProblemException) {
+        
+        String oAuthProblemExceptionString = null;
+        
+        Map<String, Object> params = authProblemException.getParameters();
+        for (String key : params.keySet()) {
+            Object o = params.get(key);
+            if (key.contains("ApiException")) {
+                oAuthProblemExceptionString = key + "=" + o.toString();
+            }
+        }
+        
+        return oAuthProblemExceptionString;
     }
 
     public static String contactsToXml(ArrayOfContact arrayOfContacts) {
