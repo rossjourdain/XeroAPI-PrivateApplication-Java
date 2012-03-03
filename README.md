@@ -25,7 +25,12 @@ Step 1:  Setup a Xero application
 Follow the instructions here:
 http://blog.xero.com/developer/api-overview/setup-an-application/#private-apps
 
-Step 2:  Get the Schemas
+Step 2:  Add your private key, consumer key and secret
+
+Put your private key into: privateKey.pem
+Put your consumer key and secret into: xeroApi.properties
+
+Step 3:  Get the Schemas
 
 Start with the modified Xero API schemas here:
 https://github.com/rossjourdain/XeroAPI-Schemas
@@ -33,11 +38,11 @@ https://github.com/rossjourdain/XeroAPI-Schemas
 They should be up to date but if not, you can get the latest Xero API schemas here:
 https://github.com/XeroAPI/XeroAPI-Schemas
 
-Step 3:  Download this project
+Step 4:  Download this project
 
-Step 4:  Add the schemas to src/main/resources/XeroSchemas/v2.00/
+Step 5:  Add the schemas to src/main/resources/XeroSchemas/v2.00/
 
-Step 5:  Build and Hack
+Step 6:  Build and Hack
 
 
 This project uses the following projects:

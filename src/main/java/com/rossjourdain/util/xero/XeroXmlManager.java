@@ -1,3 +1,20 @@
+
+/*
+ *  Copyright 2011 Ross Jourdain
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
 package com.rossjourdain.util.xero;
 
 import java.io.InputStream;
@@ -17,11 +34,11 @@ import net.oauth.OAuthProblemException;
  * @author ross
  */
 public class XeroXmlManager {
-    
+
     public static ArrayOfInvoice xmlToInvoices(InputStream invoiceStream) {
 
         ArrayOfInvoice arrayOfInvoices = null;
-        
+
         try {
             JAXBContext context = JAXBContext.newInstance(ResponseType.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -52,7 +69,7 @@ public class XeroXmlManager {
 
         return response;
     }
-    
+
     public static ApiException xmlToException(String exceptionString) {
 
         ApiException apiException = null;
@@ -71,9 +88,9 @@ public class XeroXmlManager {
     }
 
     public static String oAuthProblemExceptionToXml(OAuthProblemException authProblemException) {
-        
+
         String oAuthProblemExceptionString = null;
-        
+
         Map<String, Object> params = authProblemException.getParameters();
         for (String key : params.keySet()) {
             Object o = params.get(key);
@@ -81,7 +98,7 @@ public class XeroXmlManager {
                 oAuthProblemExceptionString = key + "=" + o.toString();
             }
         }
-        
+
         return oAuthProblemExceptionString;
     }
 
@@ -132,7 +149,7 @@ public class XeroXmlManager {
 
         return invoicesString;
     }
-    
+
     public static String paymentsToXml(ArrayOfPayment arrayOfPayment) {
 
         String paymentsString = null;
@@ -156,5 +173,4 @@ public class XeroXmlManager {
 
         return paymentsString;
     }
-    
 }
