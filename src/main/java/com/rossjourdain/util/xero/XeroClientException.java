@@ -17,88 +17,103 @@
  */
 package com.rossjourdain.util.xero;
 
-import java.io.StringReader;
+import com.sun.xml.internal.ws.streaming.DOMStreamReader;
 import java.util.List;
-import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 import net.oauth.OAuthProblemException;
+import org.w3c.dom.Element;
 
 /**
  *
  * @author ross
  */
 public class XeroClientException extends Exception {
-    
-    private ApiException apiException;
-    
-    public XeroClientException(String message, OAuthProblemException oAuthProblemException) {
 
-        super(message, oAuthProblemException);
-        
-        String oAuthProblemExceptionString = null;
-        Map<String, Object> params = oAuthProblemException.getParameters();
-        for (String key : params.keySet()) {
-            if (key.contains("ApiException")) {
-                Object o = params.get(key);
-                oAuthProblemExceptionString = key + "=" + o.toString();
-            }
+  private ApiExceptionExtended apiException;
+
+  public XeroClientException(String message, OAuthProblemException oAuthProblemException) {
+
+    super(message, oAuthProblemException);
+
+    String oAuthProblemExceptionString = null;
+
+    oAuthProblemExceptionString = XeroXmlManager.oAuthProblemExceptionToXml(oAuthProblemException);
+    System.out.println(oAuthProblemExceptionString);
+    apiException = (ApiExceptionExtended) XeroXmlManager.xmlToException(oAuthProblemExceptionString);
+  }
+
+  public ApiException getApiException() {
+    return apiException;
+  }
+
+  public void printDetails() {
+    
+    try {
+      
+      System.out.println("");
+      System.out.println(this.getMessage());
+      System.out.println("Message: " + apiException.getMessage());
+      System.out.println("Error " + apiException.getErrorNumber() + ": " + apiException.getType());
+
+      Element e = (Element) apiException.getElements().getDataContractBase();
+      String elementType = e.getAttribute("xsi:type");
+
+      JAXBContext context = JAXBContext.newInstance(ResponseType.class);
+      Unmarshaller unmarshaller = context.createUnmarshaller();
+      // unmarshaller.setEventHandler(new DefaultValidationEventHandler());
+
+      JAXBElement jaxbElement = null;
+
+      System.out.println("Type is: " + elementType);
+
+
+      if ("Invoice".equals(elementType)) {
+        System.out.println("Processing Invoice");
+        jaxbElement = unmarshaller.unmarshal(new DOMStreamReader(e), Invoice.class);
+        Invoice invoice = (Invoice) jaxbElement.getValue();
+        System.out.println("Invoice ID: " + invoice.getInvoiceID());
+        if (invoice.getDate() != null) {
+          System.out.println("Invoice Date  : " + invoice.getDate().getTime());
         }
-        
-        try {
-            JAXBContext context = JAXBContext.newInstance(ApiException.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            JAXBElement<ApiException> element = unmarshaller.unmarshal(new StreamSource(new StringReader(oAuthProblemExceptionString)), ApiException.class);
-            apiException = element.getValue();
-        } catch (JAXBException ex) {
-            ex.printStackTrace();
+      } else if ("Payment".equals(elementType)) {
+        System.out.println("Processing Payment");
+        jaxbElement = unmarshaller.unmarshal(new DOMStreamReader(e), Payment.class);
+        Payment payment = (Payment) jaxbElement.getValue();
+        System.out.println("Payment ID  : " + payment.getPaymentID());
+        if (payment.getDate() != null) {
+          System.out.println("Payment Date  : " + payment.getDate().getTime());
         }
-    }
+      } else {
+        throw new RuntimeException("Unrecognised type: " + elementType);
+      }
 
-    public ApiException getApiException() {
-        return apiException;
-    }
-    
-    public void printDetails() {
-
-        System.out.println("");
-        System.out.println(this.getMessage());
-        System.out.println("Message: " + apiException.getMessage());
-        System.out.println("Error " + apiException.getErrorNumber() + ": " + apiException.getType());
-        if (apiException.getElements() != null && apiException.getElements().getDataContractBase() != null) {
-            List<DataContractBase> dataContractBases = apiException.getElements().getDataContractBase();
-            for (DataContractBase dataContractBase : dataContractBases) {
-
-                System.out.println("DataType: " + dataContractBase.getClass().getSimpleName());
-                //if(dataContractBase instanceof Invoice) {
-                //    System.out.println("Invoice Number: " + ((Invoice)dataContractBase).getInvoiceNumber());
-                //} else if(dataContractBase instanceof Invoice) {
-                //    System.out.println("Payment ID: " + ((Payment)dataContractBase).getPaymentID());
-                //}
-
-                if (dataContractBase.getWarnings() != null && dataContractBase.getWarnings().getWarning() != null) {
-                    List<Warning> warnings = dataContractBase.getWarnings().getWarning();
-                    for (int i = 0; i < warnings.size(); i++) {
-                        Warning warning = warnings.get(i);
-                        System.out.println("Warning " + (i + 1) + ": " + warning.getMessage());
-                    }
-                }
-                if (dataContractBase.getValidationErrors() != null && dataContractBase.getValidationErrors().getValidationError() != null) {
-                    List<ValidationError> validationErrors = dataContractBase.getValidationErrors().getValidationError();
-                    for (int i = 0; i < validationErrors.size(); i++) {
-                        ValidationError validationError = validationErrors.get(i);
-                        System.out.println("Validation Error " + (i + 1) + ": " + validationError.getMessage());
-                    }
-                }
-            }
+      if (jaxbElement != null) {
+        DataContractBase dataContractBase = (DataContractBase) jaxbElement.getValue();
+        if (dataContractBase.getWarnings() != null && dataContractBase.getWarnings().getWarning() != null) {
+          List<Warning> warnings = dataContractBase.getWarnings().getWarning();
+          for (int i = 0; i < warnings.size(); i++) {
+            Warning warning = warnings.get(i);
+            System.out.println("Warning " + (i + 1) + ": " + warning.getMessage());
+          }
         }
-        System.out.println("");
-        /* Add this back in if you need more details on the exception */
-        //System.out.println("" + apiExceptionString);
-        //System.out.println("");
+        if (dataContractBase.getValidationErrors() != null && dataContractBase.getValidationErrors().getValidationError() != null) {
+          List<ValidationError> validationErrors = dataContractBase.getValidationErrors().getValidationError();
+          for (int i = 0; i < validationErrors.size(); i++) {
+            ValidationError validationError = validationErrors.get(i);
+            System.out.println("Validation Error " + (i + 1) + ": " + validationError.getMessage());
+          }
+        }
+      }
+
+      System.out.println("");
+      /* Add this back in if you need more details on the exception */
+      //System.out.println("" + apiExceptionString);
+      //System.out.println("");
+    } catch (JAXBException ex) {
+      ex.printStackTrace();
     }
-    
+  }
 }

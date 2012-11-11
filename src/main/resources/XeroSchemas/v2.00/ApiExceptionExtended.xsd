@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="ApiException"
+  elementFormDefault="qualified"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  >
+
+  <xs:include schemaLocation="ApiException.xsd" />
+
+  <!--
+  <xs:include schemaLocation="Account.xsd" />
+  <xs:include schemaLocation="BankTransaction.xsd" />
+  <xs:include schemaLocation="BrandingTheme.xsd" />
+  <xs:include schemaLocation="Contact.xsd" />
+  <xs:include schemaLocation="CreditNote.xsd" />
+  <xs:include schemaLocation="Currency.xsd" />
+  <xs:include schemaLocation="Employee.xsd" />
+  <xs:include schemaLocation="ExpenseClaim.xsd" />
+  <xs:include schemaLocation="Invoice.xsd" />
+  <xs:include schemaLocation="Items.xsd" />
+  <xs:include schemaLocation="Journal.xsd" />
+  <xs:include schemaLocation="ManualJournal.xsd" />
+  <xs:include schemaLocation="Organisation.xsd" />
+  <xs:include schemaLocation="Payment.xsd" />
+  <xs:include schemaLocation="Receipt.xsd" />
+  <xs:include schemaLocation="Report.xsd" />
+  <xs:include schemaLocation="TaxRate.xsd" />
+  <xs:include schemaLocation="Tracking.xsd" />
+  <xs:include schemaLocation="User.xsd" />
+  -->
+
+  <!-- API Exception -->
+  <xs:complexType name="ApiExceptionExtended">
+    <xs:complexContent>
+      <xs:extension base="ApiException">
+        <xs:sequence>
+          <xs:element name="Elements" minOccurs="1" maxOccurs="1">
+            <xs:complexType>
+              <xs:element name="DataContractBase" type="xs:anyType" />
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

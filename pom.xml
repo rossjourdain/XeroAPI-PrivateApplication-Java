@@ -44,6 +44,19 @@
                             <bindingIncludes>
                                 <include>XeroSchemas/v2.00/*.xjb</include>
                             </bindingIncludes>
+                            
+                            <extension>true</extension>
+                            <args>
+                              <arg>-Xinheritance</arg>
+                            </args>
+                            <plugins>
+                              <plugin>
+                                <groupId>org.jvnet.jaxb2_commons</groupId>
+                                <artifactId>jaxb2-basics</artifactId>
+                                <version>0.6.4</version>
+                              </plugin>
+                            </plugins>
+                            
                         </configuration>
                     </execution>
                 </executions>
