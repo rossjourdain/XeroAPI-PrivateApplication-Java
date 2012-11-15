@@ -44,12 +44,11 @@ public class XeroClientException extends Exception {
     String oAuthProblemExceptionString = null;
 
     oAuthProblemExceptionString = XeroXmlManager.oAuthProblemExceptionToXml(oAuthProblemException);
-    System.out.println(oAuthProblemExceptionString);
     apiException = (ApiExceptionExtended) XeroXmlManager.xmlToException(oAuthProblemExceptionString);
     unmarshalAdditionalData();
 
     /* Add this back in if you need more details on the exception */
-    //System.out.println("" + apiExceptionString);
+    //System.out.println("" + oAuthProblemExceptionString);
     //System.out.println("");
   }
 
@@ -82,7 +81,6 @@ public class XeroClientException extends Exception {
       // unmarshaller.setEventHandler(new DefaultValidationEventHandler());
 
       JAXBElement jaxbElement = null;
-      System.out.println("Type is: " + elementType);
 
       if ("Invoice".equals(elementType)) {
         jaxbElement = unmarshaller.unmarshal(new DOMStreamReader(e), Invoice.class);
@@ -119,39 +117,7 @@ public class XeroClientException extends Exception {
     System.out.println("");
     System.out.println(this.getMessage());
     System.out.println("Message: " + apiException.getMessage());
-    System.out.println("Error " + apiException.getErrorNumber() + ": " + apiException.getType());
-
-    System.out.println("" + modelObject);
-    System.out.println("" + modelObject.getClass());
-
-
-    if (modelObject instanceof Invoice) {
-      System.out.println("Processing Invoice");
-      Invoice invoice = (Invoice) modelObject;
-
-      System.out.println("Invoice ID: " + invoice.getInvoiceID());
-      if (invoice.getDate() != null) {
-        System.out.println("Invoice Date: " + invoice.getDate().getTime());
-      }
-    } else if (modelObject instanceof Payment) {
-      System.out.println("Processing Payment");
-      Payment payment = (Payment) modelObject;
-
-      System.out.println("Payment ID: " + payment.getPaymentID());
-      if (payment.getDate() != null) {
-        System.out.println("Payment Date: " + payment.getDate().getTime());
-      }
-    } else if (modelObject instanceof Contact) {
-      System.out.println("Processing Contact");
-      Contact contact = (Contact) modelObject;
-
-      System.out.println("Contact ID: " + contact.getContactID());
-      System.out.println("Contact Name: " + contact.getName());
-    } else {
-      System.out.println("Unrecognised type: " + modelObject);
-    }
-
-
+    
     for (int i = 0; i < warnings.size(); i++) {
       Warning warning = warnings.get(i);
       System.out.println("Warning " + (i + 1) + ": " + warning.getMessage());
@@ -160,6 +126,27 @@ public class XeroClientException extends Exception {
     for (int i = 0; i < validationErrors.size(); i++) {
       ValidationError validationError = validationErrors.get(i);
       System.out.println("Validation Error " + (i + 1) + ": " + validationError.getMessage());
+    }
+    
+    System.out.println("Error " + apiException.getErrorNumber() + ": " + apiException.getType());
+    if (modelObject instanceof Invoice) {
+      Invoice invoice = (Invoice) modelObject;
+      System.out.println("Invoice ID: " + invoice.getInvoiceID());
+      if (invoice.getDate() != null) {
+        System.out.println("Invoice Date: " + invoice.getDate().getTime());
+      }
+    } else if (modelObject instanceof Payment) {
+      Payment payment = (Payment) modelObject;
+      System.out.println("Payment ID: " + payment.getPaymentID());
+      if (payment.getDate() != null) {
+        System.out.println("Payment Date: " + payment.getDate().getTime());
+      }
+    } else if (modelObject instanceof Contact) {
+      Contact contact = (Contact) modelObject;
+      System.out.println("Contact ID: " + contact.getContactID());
+      System.out.println("Contact Name: " + contact.getName());
+    } else {
+      System.out.println("Unrecognised type: " + modelObject);
     }
 
   }
