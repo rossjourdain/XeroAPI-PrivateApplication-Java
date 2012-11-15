@@ -25,10 +25,10 @@
  */
 -->
 <jxb:bindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-               xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
-               jxb:extensionBindingPrefixes="inheritance"
-               jxb:version="2.0">
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
+              jxb:extensionBindingPrefixes="inheritance"
+              jxb:version="2.0">
     <jxb:bindings schemaLocation="Payment.xsd" node="/xsd:schema">
         <jxb:bindings node="//xsd:complexType[@name='Payment']">
             <inheritance:implements>com.rossjourdain.util.xero.DataContractBase</inheritance:implements>
