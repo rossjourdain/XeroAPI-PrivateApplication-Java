@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.transform.stream.StreamSource;
 import net.oauth.OAuthProblemException;
 
@@ -70,14 +71,14 @@ public class XeroXmlManager {
         return response;
     }
 
-    public static ApiException xmlToException(String exceptionString) {
+    public static ApiExceptionExtended xmlToException(String exceptionString) {
 
-        ApiException apiException = null;
+        ApiExceptionExtended apiException = null;
 
         try {
-            JAXBContext context = JAXBContext.newInstance(ApiException.class);
+            JAXBContext context = JAXBContext.newInstance(ApiExceptionExtended.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            JAXBElement<ApiException> element = unmarshaller.unmarshal(new StreamSource(new StringReader(exceptionString)), ApiException.class);
+            JAXBElement<ApiExceptionExtended> element = unmarshaller.unmarshal(new StreamSource(new StringReader(exceptionString)), ApiExceptionExtended.class);
             apiException = element.getValue();
 
         } catch (JAXBException ex) {
